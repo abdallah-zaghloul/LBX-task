@@ -53,7 +53,8 @@ class EmployeeServiceProvider extends ServiceProvider
     {
         $this->publishes([
             module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
-            module_path($this->moduleName, 'Config/repository.php') => config_path('repository.php'),
+//            module_path($this->moduleName, 'Config/repository.php') => config_path('repository.php'),
+//            module_path($this->moduleName, 'Config/excel.php') => config_path('excel.php'),
         ], 'config');
         $this->mergeConfigFrom(module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower);
     }
