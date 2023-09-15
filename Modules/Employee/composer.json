@@ -1,0 +1,28 @@
+{
+    "name": "lbx/employee",
+    "description": "Employee CRUD & Excel Sheet Import",
+    "authors": [
+        {
+            "name": "Abdallah Zaghloul",
+            "email": "3bdallahzaghloul@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Prettus\\Repository\\Providers\\RepositoryServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Employee\\": ""
+        }
+    },
+    "require": {
+        "prettus/l5-repository": "^2.9"
+    }
+}
