@@ -2,11 +2,11 @@
 
 namespace Modules\Employee\Enums;
 
-use Modules\Employee\Traits\EnumToArray;
+use Modules\Employee\Traits\EnumIterable;
 
 enum HttpStatusCodeEnum : int
 {
-    use EnumToArray;
+    use EnumIterable;
 
     case Success = 200;
     case Created = 201;

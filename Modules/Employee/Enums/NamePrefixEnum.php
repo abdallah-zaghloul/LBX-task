@@ -2,11 +2,11 @@
 
 namespace Modules\Employee\Enums;
 
-use Modules\Employee\Traits\EnumToArray;
+use Modules\Employee\Traits\EnumIterable;
 
 enum NamePrefixEnum : string
 {
-    use EnumToArray;
+    use EnumIterable;
 
     case Mrs = "Mrs.";
     case Mr = "Mr.";

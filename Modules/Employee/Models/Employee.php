@@ -5,7 +5,10 @@ namespace Modules\Employee\Models;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
@@ -23,10 +26,33 @@ class Employee extends Model implements Transformable
      */
     protected $table = 'employees';
 
+
     /**
      * @var bool
      */
     public $timestamps = true;
+
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'id',
+        'created_at',
+        'updated_at'
+    ];
+
+
+    /**
+     * The hidden attributes.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'excel_sheet_id',
+    ];
 
 
     /**
@@ -49,38 +75,82 @@ class Employee extends Model implements Transformable
         'age_in_company',
         'phone_no',
         'place_name',
-        'country',
+        'county',
         'city',
         'zip',
         'region',
+        'excel_sheet_id',
     ];
 
-    /**
-     * @param $dateOfBirth
-     * @return string
-     */
-    public function getDateOfBirthAttribute($dateOfBirth): string
-    {
-        return Carbon::parse($dateOfBirth)->format('d/m/Y');
-    }
 
     /**
-     * @param $dateOfJoining
-     * @return string
+     * @return Attribute
      */
-    public function getDateOfJoiningAttribute($dateOfJoining): string
+    public function middleInitial(): Attribute
     {
-        return Carbon::parse($dateOfJoining)->format('d/m/Y');
+        return Attribute::make(
+            set: fn (string $value) => Str::upper($value),
+        );
     }
 
+
     /**
-     * @param $timeOfBirth
-     * @return string
+     * @return Attribute
      */
-    public function getTimeOfBirthAttribute($timeOfBirth): string
+    public function dateOfBirth(): Attribute
     {
-        return Carbon::parse($timeOfBirth)->format('h:i:s A');
+        return Attribute::make(
+            get: fn (string $value) => Carbon::parse($value)->format('d/m/Y'),
+            set: fn (string $value) => Carbon::parse($value)->format('Y-m-d'),
+        );
     }
+
+
+    /**
+     * @return Attribute
+     */
+    public function dateOfJoining(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::parse($value)->format('d/m/Y'),
+            set: fn (string $value) => Carbon::parse($value)->format('Y-m-d'),
+        );
+    }
+
+
+    /**
+     * @return Attribute
+     */
+    public function timeOfBirth(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::parse($value)->format('h:i:s A'),
+            set: fn (string $value) => Carbon::parse($value)->format('H:i:s'),
+        );
+    }
+
+
+   /**
+     * @return Attribute
+     */
+    public function ageInYears(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => number_format((float) $value,'2','.',''),
+        );
+    }
+
+
+   /**
+     * @return Attribute
+     */
+    public function ageInCompany(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => number_format((float) $value,'2','.',''),
+        );
+    }
+
 
     /**
      * @param DateTimeInterface $date
@@ -89,5 +159,14 @@ class Employee extends Model implements Transformable
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('d/m/Y h:i:s A');
+    }
+
+
+    /**
+     * @return BelongsTo
+     */
+    public function excelSheet(): BelongsTo
+    {
+        return $this->belongsTo(ExcelSheet::class);
     }
 }
