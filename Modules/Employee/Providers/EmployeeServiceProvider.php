@@ -2,9 +2,12 @@
 
 namespace Modules\Employee\Providers;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
 class EmployeeServiceProvider extends ServiceProvider
 {
@@ -30,6 +33,7 @@ class EmployeeServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
         Schema::defaultStringLength(191);
+        $this->addExcelHeadingRowFormatter();
     }
 
     /**
@@ -41,7 +45,6 @@ class EmployeeServiceProvider extends ServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(RepositoryServiceProvider::class);
-
     }
 
     /**
@@ -53,10 +56,14 @@ class EmployeeServiceProvider extends ServiceProvider
     {
         $this->publishes([
             module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
-//            module_path($this->moduleName, 'Config/repository.php') => config_path('repository.php'),
-//            module_path($this->moduleName, 'Config/excel.php') => config_path('excel.php'),
         ], 'config');
         $this->mergeConfigFrom(module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower);
+
+        //override packages config
+        Config::set([
+            'repository.generator.paths.models' => 'Models',
+        ]);
+
     }
 
     /**
@@ -114,5 +121,22 @@ class EmployeeServiceProvider extends ServiceProvider
             }
         }
         return $paths;
+    }
+
+    private function addExcelHeadingRowFormatter()
+    {
+        HeadingRowFormatter::extend('custom', function ($header, $columnNumber){
+            $attribute = Str::slug($header,'_');
+            $attribute = preg_replace( '/[^a-z_]/i', '', $attribute);
+            return match ($attribute){
+                'emp_id' => 'id',
+                'e_mail' => 'email',
+                'age_in_yrs' => 'age_in_years',
+                'age_in_company_years' => 'age_in_company',
+                default => $attribute
+            };
+        });
+
+        HeadingRowFormatter::default('custom');
     }
 }

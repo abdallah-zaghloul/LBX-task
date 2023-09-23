@@ -2,11 +2,11 @@
 
 namespace Modules\Employee\Enums;
 
-use Modules\Employee\Traits\EnumToArray;
+use Modules\Employee\Traits\EnumIterable;
 
 enum GenderEnum : string
 {
-    use EnumToArray;
+    use EnumIterable;
 
     case Male = 'M';
     case Female = 'F';

@@ -6,40 +6,61 @@ use Modules\Employee\Enums\HttpStatusCodeEnum;
 
 trait Response
 {
+
     /**
-     * @param string $message
+     * @param array $errors
+     * @param string|null $message
      * @param HttpStatusCodeEnum|null $errorHttpCode
      * @return mixed
      */
-    public function errorResponse(string $message, ?HttpStatusCodeEnum $errorHttpCode = null): mixed
+    public function errorResponse(array $errors, ?string $message = null , ?HttpStatusCodeEnum $errorHttpCode = null): mixed
     {
         throw new HttpResponseException(response()->json([
-            'message'=> $message
+            'status'=> false,
+            'message'=> $message ?? @trans('employee::messages.bad_request'),
+            'errors'=> $errors,
         ],$errorHttpCode->value ?? HttpStatusCodeEnum::BadRequest->value));
     }
 
 
     /**
-     * @param string $message
+     * @param string|null $message
      * @return JsonResponse
      */
-    public function successResponse(string $message): JsonResponse
+    public function successResponse(?string $message = null): JsonResponse
     {
         return response()->json([
-            'message'=> $message,
+            'status'=> true,
+            'message'=> $message ?? @trans('employee::messages.success'),
         ], HttpStatusCodeEnum::Success->value);
     }
 
     /**
-     * @param string $message
      * @param array $data
+     * @param string|null $message
      * @return JsonResponse
      */
-    public function dataResponse(string $message, array $data): JsonResponse
+    public function dataResponse(array $data, ?string $message = null): JsonResponse
     {
         return response()->json([
-            'message'=> $message,
+            'status'=> true,
+            'message'=> $message ?? @trans('employee::messages.success'),
             'data'=> $data,
         ], HttpStatusCodeEnum::Success->value);
     }
+
+
+    /**
+     * @param string|null $message
+     * @param HttpStatusCodeEnum|null $errorHttpCode
+     * @return mixed
+     */
+    public function errorMessage(?string $message = null , ?HttpStatusCodeEnum $errorHttpCode = null): mixed
+    {
+        throw new HttpResponseException(response()->json([
+            'status'=> false,
+            'message'=> $message ?? @trans('employee::messages.unavailable_server'),
+        ],$errorHttpCode->value ?? HttpStatusCodeEnum::UnavailableServer->value));
+    }
+
 }

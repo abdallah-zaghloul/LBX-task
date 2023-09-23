@@ -32,10 +32,12 @@ return new class extends Migration
             $table->decimal('age_in_company',5, 2);
             $table->string('phone_no',16);
             $table->string('place_name');
-            $table->string('country');
+            $table->string('county');
             $table->string('city');
             $table->string('zip',16);
             $table->string('region',16);
+            $table->uuid('excel_sheet_id')->nullable();
+            $table->foreign('excel_sheet_id')->references('id')->on('excel_sheets')->cascadeOnUpdate()->nullOnDelete();
 //            $table->enum('region', RegionEnum::values());
             $table->timestamps();
 		});

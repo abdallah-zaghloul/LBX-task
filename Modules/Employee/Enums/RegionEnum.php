@@ -2,11 +2,11 @@
 
 namespace Modules\Employee\Enums;
 
-use Modules\Employee\Traits\EnumToArray;
+use Modules\Employee\Traits\EnumIterable;
 
 enum RegionEnum : string
 {
-    use EnumToArray;
+    use EnumIterable;
 
     case Northeast = 'Northeast';
     case South = 'South';
