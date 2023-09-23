@@ -34,7 +34,7 @@ class EmployeeDatabaseSeeder extends Seeder
             'age_in_company' => '9.49',
             'phone_no' => '212-376-9125',
             'place_name' => 'Clymer',
-            'country' => 'Chautauqua',
+            'county' => 'Chautauqua',
             'city' => 'Clymer',
             'zip' => '14724',
             'region' => 'Northeast',

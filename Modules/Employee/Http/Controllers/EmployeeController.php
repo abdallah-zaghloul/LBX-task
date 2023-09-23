@@ -2,56 +2,26 @@
 
 namespace Modules\Employee\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Modules\Employee\Http\Requests\ImportEmployeeRequest;
+use Modules\Employee\Services\ImportEmployeeService;
+use Modules\Employee\Traits\Response;
+use Throwable;
 
 class EmployeeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-
-    }
+    use Response;
 
     /**
-     * Store a newly created resource in storage.
-     * @param Request $request
+     * @param ImportEmployeeRequest $request
+     * @param ImportEmployeeService $service
+     * @return JsonResponse
+     * @throws Throwable
      */
-    public function store(Request $request)
+    public function import(ImportEmployeeRequest $request, ImportEmployeeService $service): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     */
-    public function show($id)
-    {
-
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        $excel_sheet = $service->execute($request);
+        return $this->dataResponse(data:  compact('excel_sheet'), message: @trans('employee::messages.processing'));
     }
 }

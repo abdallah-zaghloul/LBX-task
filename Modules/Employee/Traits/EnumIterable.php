@@ -2,7 +2,9 @@
 
 namespace Modules\Employee\Traits;
 
-trait EnumToArray
+use Illuminate\Support\Collection;
+
+trait EnumIterable
 {
     /**
      * @return array
@@ -26,5 +28,13 @@ trait EnumToArray
     public static function array(): array
     {
         return array_combine(static::names(), static::values());
+    }
+
+    /**
+     * @return Collection
+     */
+    public static function collection(): Collection
+    {
+        return collect(static::cases());
     }
 }
