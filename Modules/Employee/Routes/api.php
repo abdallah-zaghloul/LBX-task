@@ -23,6 +23,7 @@ Route::group([
     Route::post('/', [EmployeeController::class, 'import'])->name('import');
     Route::get('/', [EmployeeController::class, 'index'])->name('index');
     Route::get('/{id}', [EmployeeController::class, 'show'])->name('show');
+    Route::delete('/{id}', [EmployeeController::class, 'delete'])->name('delete');
 });
 
 Route::group([
