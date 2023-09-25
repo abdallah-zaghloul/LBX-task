@@ -2,8 +2,10 @@
 
 namespace Modules\Employee\Repositories;
 
-use App\Validators\EmployeeValidator;
+use Illuminate\Database\QueryException;
+use Modules\Employee\Enums\HttpStatusCodeEnum;
 use Modules\Employee\Models\Employee;
+use Modules\Employee\Traits\Response;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use function app;
@@ -15,6 +17,34 @@ use function app;
  */
 class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepository
 {
+    use Response;
+
+    /**
+     * @var string[]
+     */
+    protected $fieldSearchable = [
+        'user_name',
+        'name_prefix',
+        'first_name',
+        'middle_initial',
+        'last_name',
+        'gender',
+        'email',
+        'date_of_birth',
+        'time_of_birth',
+        'age_in_years',
+        'date_of_joining',
+        'age_in_company',
+        'phone_no',
+        'place_name',
+        'county',
+        'city',
+        'zip',
+        'region',
+        'created_at',
+        'updated_at',
+    ];
+
     /**
      * Specify Model class name
      *
@@ -32,6 +62,25 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
     public function boot()
     {
         $this->pushCriteria(app(RequestCriteria::class));
+    }
+
+
+    /**
+     * @param $limit
+     * @param $columns
+     * @param $method
+     * @return mixed
+     */
+    public function paginate($limit = null, $columns = ['*'], $method = "paginate"): mixed
+    {
+        try {
+            return parent::paginate($limit, $columns, $method);
+        }catch (\Throwable $exception){
+            return match ($exception::class){
+              QueryException::class => $this->errorMessage(@trans('employee::messages.invalid_query_parameters'), HttpStatusCodeEnum::BadRequest),
+              default => $this->errorMessage(),
+            };
+        }
     }
 
 }

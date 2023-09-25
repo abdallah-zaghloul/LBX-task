@@ -21,6 +21,8 @@ Route::group([
     'as'=> 'employee.'
 ], function (){
     Route::post('/', [EmployeeController::class, 'import'])->name('import');
+    Route::get('/', [EmployeeController::class, 'index'])->name('index');
+    Route::get('/{id}', [EmployeeController::class, 'show'])->name('show');
 });
 
 Route::group([

@@ -5,7 +5,6 @@ namespace Modules\Employee\Providers;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
@@ -33,6 +32,7 @@ class EmployeeServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
         Schema::defaultStringLength(191);
+        $this->overridePackagesConfig();
         $this->addExcelHeadingRowFormatter();
     }
 
@@ -58,12 +58,20 @@ class EmployeeServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
         ], 'config');
         $this->mergeConfigFrom(module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower);
+    }
 
+    /**
+     * @return void
+     */
+    protected function overridePackagesConfig()
+    {
         //override packages config
         Config::set([
+            'repository.generator.basePath' => module_path($this->moduleName),
+            'repository.generator.rootNamespace' => 'Modules\\Employee\\',
+            'repository.generator.stubsOverridePath' => module_path($this->moduleName),
             'repository.generator.paths.models' => 'Models',
         ]);
-
     }
 
     /**

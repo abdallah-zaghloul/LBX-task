@@ -60,7 +60,8 @@ trait Response
         throw new HttpResponseException(response()->json([
             'status'=> false,
             'message'=> $message ?? @trans('employee::messages.unavailable_server'),
-        ],$errorHttpCode->value ?? HttpStatusCodeEnum::UnavailableServer->value));
+        ], ($errorHttpCode ?? HttpStatusCodeEnum::UnavailableServer)->value));
     }
+
 
 }
