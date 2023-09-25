@@ -11,15 +11,18 @@ trait Response
      * @param array $errors
      * @param string|null $message
      * @param HttpStatusCodeEnum|null $errorHttpCode
+     * @param bool $shouldThrow
      * @return mixed
      */
-    public function errorResponse(array $errors, ?string $message = null , ?HttpStatusCodeEnum $errorHttpCode = null): mixed
+    public function errorResponse(array $errors, ?string $message = null , ?HttpStatusCodeEnum $errorHttpCode = null, bool $shouldThrow = true): mixed
     {
-        throw new HttpResponseException(response()->json([
+        $response = response()->json([
             'status'=> false,
             'message'=> $message ?? @trans('employee::messages.bad_request'),
             'errors'=> $errors,
-        ],$errorHttpCode->value ?? HttpStatusCodeEnum::BadRequest->value));
+        ],$errorHttpCode->value ?? HttpStatusCodeEnum::BadRequest->value);
+
+        return $shouldThrow ? throw new HttpResponseException($response) : $response;
     }
 
 
@@ -53,14 +56,17 @@ trait Response
     /**
      * @param string|null $message
      * @param HttpStatusCodeEnum|null $errorHttpCode
+     * @param bool $shouldThrow
      * @return mixed
      */
-    public function errorMessage(?string $message = null , ?HttpStatusCodeEnum $errorHttpCode = null): mixed
+    public function errorMessage(?string $message = null , ?HttpStatusCodeEnum $errorHttpCode = null, bool $shouldThrow = true): mixed
     {
-        throw new HttpResponseException(response()->json([
+        $response = response()->json([
             'status'=> false,
             'message'=> $message ?? @trans('employee::messages.unavailable_server'),
-        ], ($errorHttpCode ?? HttpStatusCodeEnum::UnavailableServer)->value));
+        ], ($errorHttpCode ?? HttpStatusCodeEnum::UnavailableServer)->value);
+
+        return $shouldThrow ? throw new HttpResponseException($response) : $response;
     }
 
 
