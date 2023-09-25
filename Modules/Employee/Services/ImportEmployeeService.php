@@ -7,7 +7,6 @@ use Modules\Employee\Imports\EmployeeImporter;
 use Modules\Employee\Imports\EmployeeImportValidator;
 use Modules\Employee\Jobs\UpdateExcelSheetJob;
 use Modules\Employee\Models\ExcelSheet;
-use Modules\Employee\Traits\Response;
 use Throwable;
 
 /**
@@ -15,7 +14,6 @@ use Throwable;
  */
 class ImportEmployeeService extends EmployeeService
 {
-    use Response;
 
     /**
      * @var CreateExcelSheetService
