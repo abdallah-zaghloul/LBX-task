@@ -3,13 +3,10 @@
 namespace Modules\Employee\Services;
 
 use Modules\Employee\Models\ExcelSheet;
-use Modules\Employee\Traits\Response;
 use Throwable;
 
 class ShowExcelSheetService extends ExcelSheetService
 {
-    use Response;
-
     /**
      * @param string|int $id
      * @return ExcelSheet
