@@ -63,24 +63,4 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-
-
-    /**
-     * @param $limit
-     * @param $columns
-     * @param $method
-     * @return mixed
-     */
-    public function paginate($limit = null, $columns = ['*'], $method = "paginate"): mixed
-    {
-        try {
-            return parent::paginate($limit, $columns, $method);
-        }catch (\Throwable $exception){
-            return match ($exception::class){
-              QueryException::class => $this->errorMessage(@trans('employee::messages.invalid_query_parameters'), HttpStatusCodeEnum::BadRequest),
-              default => $this->errorMessage(),
-            };
-        }
-    }
-
 }
