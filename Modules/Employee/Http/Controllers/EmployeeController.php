@@ -5,6 +5,7 @@ namespace Modules\Employee\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Employee\Http\Requests\ImportEmployeeRequest;
+use Modules\Employee\Services\DeleteEmployeeService;
 use Modules\Employee\Services\ImportEmployeeService;
 use Modules\Employee\Services\IndexEmployeeService;
 use Modules\Employee\Services\ShowEmployeeService;
@@ -47,5 +48,16 @@ class EmployeeController extends Controller
     {
         $employee = $service->execute($id);
         return $this->dataResponse(data:  compact('employee'));
+    }
+
+    /**
+     * @param string|int $id
+     * @param DeleteEmployeeService $service
+     * @return JsonResponse
+     */
+    public function delete(string|int $id, DeleteEmployeeService $service): JsonResponse
+    {
+        $delete = $service->execute($id);
+        return $this->dataResponse(data:  compact('delete'));
     }
 }
