@@ -26,7 +26,7 @@ class EmployeeExceptionHandler extends ExceptionHandler
     {
         if ($request->wantsJson())
             return match ($e::class){
-            QueryException::class => $this->errorMessage(message: @trans('employee::messages.invalid_query_parameters'), errorHttpCode: HttpStatusCodeEnum::BadRequest, shouldThrow: false),
+//            QueryException::class => $this->errorMessage(message: @trans('employee::messages.invalid_query_parameters'), errorHttpCode: HttpStatusCodeEnum::BadRequest, shouldThrow: false),
             NotFoundHttpException::class,
             ModelNotFoundException::class => $this->errorMessage( message: @trans('employee::messages.not_found'), errorHttpCode: HttpStatusCodeEnum::NotFound, shouldThrow: false),
             ThrottleRequestsException::class => $this->errorMessage(message: @trans('employee::messages.to_many_requests'), errorHttpCode: HttpStatusCodeEnum::TooManyRequests, shouldThrow: false),
