@@ -1,10 +1,10 @@
 <?php
+/** @noinspection PhpUndefinedMethodInspection */
 
 namespace Modules\Employee\Database\Seeders;
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Enums\GenderEnum;
 use Modules\Employee\Enums\NamePrefixEnum;
 use Modules\Employee\Models\Employee;
@@ -14,19 +14,20 @@ class EmployeeDatabaseSeeder extends Seeder
     /**
      * Run the database seeds.
      *
-     * @return void
+     * @return Employee
      */
-    public function run()
+    public function run(): Employee
     {
-        Model::unguard();
-        Employee::create([
-            'user_name' => 'sibumgarner',
-            'name_prefix' => NamePrefixEnum::Mrs->value,
+        [$id, $user_name, $email] = [198429, 'sibumgarner', 'serafina.bumgarner@exxonmobil.com'];
+        return app(Employee::class)->updateOrCreate(compact('id','user_name','email'), [
+            'id' => $id,
+            'user_name' => $user_name,
+            'name_prefix' => NamePrefixEnum::Mrs,
             'first_name' => 'Serafina',
             'middle_initial' => 'I',
             'last_name' => 'Bumgarner',
-            'gender' => GenderEnum::Female->value,
-            'email' => 'serafina.bumgarner@exxonmobil.com',
+            'gender' => GenderEnum::Female,
+            'email' => $email,
             'date_of_birth' => Carbon::parse('9/21/1982'),
             'time_of_birth' => Carbon::parse('01:53:14 AM'),
             'age_in_years' => '34.87',
