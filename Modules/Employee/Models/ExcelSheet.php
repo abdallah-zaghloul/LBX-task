@@ -63,16 +63,6 @@ class ExcelSheet extends Model implements Transformable
 
 
     /**
-     * The hidden attributes.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'path',
-    ];
-
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array

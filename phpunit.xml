@@ -11,6 +11,37 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+
+        <!-- Modules Tests -->
+        <testsuite name="Modules">
+            <directory>Modules/*/Tests</directory>
+        </testsuite>
+
+        <!-- Modules Feature Tests -->
+        <testsuite name="ModulesFeature">
+            <directory>Modules/*/Tests/Feature</directory>
+        </testsuite>
+
+        <!-- Modules Unit Tests -->
+        <testsuite name="ModulesUnit">
+            <directory>Modules/*/Tests/Unit</directory>
+        </testsuite>
+
+        <!-- Employee Module Tests -->
+        <testsuite name="Employee">
+            <directory>Modules/Employee/Tests</directory>
+        </testsuite>
+
+        <!-- Employee Module Feature Tests -->
+        <testsuite name="EmployeeFeature">
+            <directory>Modules/Employee/Tests/Feature</directory>
+        </testsuite>
+
+        <!-- Employee Module Unit Tests -->
+        <testsuite name="EmployeeUnit">
+            <directory>Modules/Employee/Tests/Unit</directory>
+        </testsuite>
+
     </testsuites>
     <source>
         <include>
@@ -21,9 +52,10 @@
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <env name="DB_DATABASE" value="testing"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
         <env name="MAIL_MAILER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="QUEUE_CONNECTION" value="database"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
     </php>
