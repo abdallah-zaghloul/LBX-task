@@ -39,7 +39,6 @@ class Employee extends Model implements Transformable
      * @var array
      */
     protected $guarded = [
-        'id',
         'created_at',
         'updated_at'
     ];
@@ -61,6 +60,7 @@ class Employee extends Model implements Transformable
      * @var array
      */
     protected $fillable = [
+        'id',
         'user_name',
         'name_prefix',
         'first_name',
