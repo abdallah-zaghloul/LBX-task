@@ -3,12 +3,17 @@
 /** @noinspection PhpArrayShapeAttributeCanBeAddedInspection */
 
 namespace Modules\Employee\Imports;
+use Closure;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithUpserts;
+use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\ImportFailed;
+use Modules\Employee\Enums\ExcelSheetStatusEnum;
 use Modules\Employee\Models\Employee;
 use Modules\Employee\Models\ExcelSheet;
+use Modules\Employee\Repositories\EmployeeRepository;
 
 /**
  *
@@ -86,6 +91,25 @@ class EmployeeImporter extends EmployeeImportValidator implements
             'id',
             'user_name',
             'email'
+        ];
+    }
+
+
+    /**
+     * @return Closure[]
+     */
+    public function registerEvents(): array
+    {
+        return [
+            //Failed Import Event => Listener
+            ImportFailed::class => function(ImportFailed $event) {
+                $this->setExcelSheetErrorStatus(ExcelSheetStatusEnum::Failed, $event->getException()->getTrace());
+                app(EmployeeRepository::class)->where('excel_sheet_id', '=', $this->excelSheet->id)->delete();
+            },
+            //After Import Event => Listener
+            AfterImport::class => function(AfterImport $event){
+                $this->excelSheet->status === ExcelSheetStatusEnum::Valid and $this->excelSheet->update(['status' => ExcelSheetStatusEnum::Imported]);
+            }
         ];
     }
 

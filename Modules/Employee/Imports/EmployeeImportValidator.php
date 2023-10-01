@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpPureAttributeCanBeAddedInspection */
+<?php
+/** @noinspection PhpPureAttributeCanBeAddedInspection */
 /** @noinspection PhpUndefinedFieldInspection */
 /** @noinspection PhpArrayShapeAttributeCanBeAddedInspection */
 
@@ -29,13 +30,9 @@ use Modules\Employee\Enums\NamePrefixEnum;
 use Modules\Employee\Models\ExcelSheet;
 use Throwable;
 use Illuminate\Support\Collection;
-use Illuminate\Bus\Batchable;
-use Maatwebsite\Excel\Concerns\RegistersEventListeners;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterImport;
-use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\ImportFailed;
-
 /**
  *
  */
@@ -48,7 +45,8 @@ class EmployeeImportValidator extends HeadingRowFormatter implements
     SkipsOnError,
     SkipsOnFailure,
     WithValidation,
-    ToCollection
+    ToCollection,
+    WithEvents
 //    WithUpsertColumns,
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -72,7 +70,7 @@ class EmployeeImportValidator extends HeadingRowFormatter implements
      */
     public function __construct(ExcelSheet $excelSheet)
     {
-        $this->excelSheet = $excelSheet;
+        $this->excelSheet = $excelSheet->refresh();
         $this->regexRules = static::getRegexRules();
     }
 
@@ -243,4 +241,17 @@ class EmployeeImportValidator extends HeadingRowFormatter implements
         ]);
     }
 
+    public function registerEvents(): array
+    {
+        return [
+            //Failed Import Event => Listener
+            ImportFailed::class => function(ImportFailed $event) {
+                $this->setExcelSheetErrorStatus(ExcelSheetStatusEnum::Failed, $event->getException()->getTrace());
+            },
+            //After Import Event => Listener
+            AfterImport::class => function(AfterImport $event){
+                ! $this->excelSheet->errors and $this->excelSheet->update(['status' => ExcelSheetStatusEnum::Valid]);
+            }
+        ];
+    }
 }
