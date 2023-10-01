@@ -3,12 +3,15 @@
 /** @noinspection PhpArrayShapeAttributeCanBeAddedInspection */
 
 namespace Modules\Employee\Imports;
-use Illuminate\Support\Facades\Schema;
+use Closure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithUpserts;
+use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\ImportFailed;
+use Modules\Employee\Enums\ExcelSheetStatusEnum;
 use Modules\Employee\Models\Employee;
-use Modules\Employee\Models\ExcelSheet;
+use Modules\Employee\Repositories\EmployeeRepository;
 
 /**
  *
@@ -21,28 +24,12 @@ class EmployeeImporter extends EmployeeImportValidator implements
 {
 
     /**
-     * @var array
-     */
-    protected array $modelAttributeNames;
-
-
-    /**
-     * @param ExcelSheet $excelSheet
-     */
-    public function __construct(ExcelSheet $excelSheet)
-    {
-        parent::__construct($excelSheet);
-        $this->modelAttributeNames = static::getModelAttributeNames();
-    }
-
-
-    /**
      * @param array $row
      * @return Employee
      */
     public function model(array $row): Employee
     {
-        return app(Employee::class)->fillable($this->modelAttributeNames)->fill([
+        return app(Employee::class)->fill([
             'id' => $row['id'] ?? $row['emp_id'],
             'user_name' => $row['user_name'],
             'name_prefix' => $row['name_prefix'],
@@ -68,16 +55,6 @@ class EmployeeImporter extends EmployeeImportValidator implements
 
 
     /**
-     * @return array
-     */
-    public static function getModelAttributeNames(): array
-    {
-        $table = app(Employee::class)->getTable();
-        return collect(Schema::getColumnListing($table))->reject(fn($column) => in_array($column,['created_at','updated_at']))->all();
-    }
-
-
-    /**
      * @return string[]
      */
     public function uniqueBy(): array
@@ -86,6 +63,25 @@ class EmployeeImporter extends EmployeeImportValidator implements
             'id',
             'user_name',
             'email'
+        ];
+    }
+
+
+    /**
+     * @return Closure[]
+     */
+    public function registerEvents(): array
+    {
+        return [
+            //Failed Import Event => Listener
+            ImportFailed::class => function(ImportFailed $event) {
+                $this->setExcelSheetErrorStatus(ExcelSheetStatusEnum::Failed, $event->getException()->getTrace());
+                app(EmployeeRepository::class)->where('excel_sheet_id', '=', $this->excelSheet->id)->delete();
+            },
+            //After Import Event => Listener
+            AfterImport::class => function(AfterImport $event){
+                $this->excelSheet->status === ExcelSheetStatusEnum::Valid and $this->excelSheet->update(['status' => ExcelSheetStatusEnum::Imported]);
+            }
         ];
     }
 
