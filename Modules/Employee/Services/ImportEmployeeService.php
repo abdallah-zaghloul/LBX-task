@@ -2,10 +2,10 @@
 
 namespace Modules\Employee\Services;
 
+use Modules\Employee\Enums\ExcelSheetStatusEnum;
 use Modules\Employee\Http\Requests\ImportEmployeeRequest;
 use Modules\Employee\Imports\EmployeeImporter;
 use Modules\Employee\Imports\EmployeeImportValidator;
-use Modules\Employee\Jobs\UpdateExcelSheetJob;
 use Modules\Employee\Models\ExcelSheet;
 use Throwable;
 
@@ -41,11 +41,9 @@ class ImportEmployeeService extends EmployeeService
         $excelSheet = $this->createExcelSheetService->execute($request->file('employees'));
         $employeeImportValidator = app(EmployeeImportValidator::class, compact('excelSheet'));
         $employeeImporter = app(EmployeeImporter::class, compact('excelSheet'));
-        $updateExcelSheetJob = app(UpdateExcelSheetJob::class, compact('excelSheet'));
 
         $employeeImportValidator->queue($excelSheet->path)->chain([
-            fn() => ! $excelSheet->refresh()->errors and $employeeImporter->import($excelSheet->path),
-            $updateExcelSheetJob
+            fn() => $excelSheet->refresh()->status === ExcelSheetStatusEnum::Valid and $employeeImporter->queue($excelSheet->path)
         ]);
 
         return $excelSheet;
