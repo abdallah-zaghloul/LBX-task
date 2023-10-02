@@ -2,11 +2,8 @@
 
 namespace Modules\Employee\Repositories;
 
-use Illuminate\Database\QueryException;
-use Modules\Employee\Enums\HttpStatusCodeEnum;
+use Modules\Employee\Criteria\RequestCriteria;
 use Modules\Employee\Models\Employee;
-use Modules\Employee\Traits\Response;
-use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use function app;
 
@@ -17,12 +14,12 @@ use function app;
  */
 class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepository
 {
-    use Response;
 
     /**
      * @var string[]
      */
     protected $fieldSearchable = [
+        'id',
         'user_name',
         'name_prefix',
         'first_name',

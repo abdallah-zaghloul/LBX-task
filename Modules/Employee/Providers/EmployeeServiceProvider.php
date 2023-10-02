@@ -32,7 +32,6 @@ class EmployeeServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
         Schema::defaultStringLength(191);
-        $this->overridePackagesConfig();
         $this->addExcelHeadingRowFormatter();
     }
 
@@ -58,6 +57,7 @@ class EmployeeServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
         ], 'config');
         $this->mergeConfigFrom(module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower);
+        $this->overridePackagesConfig();
     }
 
     /**
@@ -68,9 +68,13 @@ class EmployeeServiceProvider extends ServiceProvider
         //override packages config
         Config::set([
             'repository.generator.basePath' => module_path($this->moduleName),
-            'repository.generator.rootNamespace' => 'Modules\\Employee\\',
+            'repository.generator.rootNamespace' => "Modules\\$this->moduleName\\",
             'repository.generator.stubsOverridePath' => module_path($this->moduleName),
             'repository.generator.paths.models' => 'Models',
+            'l5-swagger.documentations.paths.annotations' => [
+                base_path('app'),
+                base_path('Modules/*/Http'),
+            ],
         ]);
     }
 
