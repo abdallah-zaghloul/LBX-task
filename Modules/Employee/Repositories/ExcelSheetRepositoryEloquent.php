@@ -2,9 +2,8 @@
 
 namespace Modules\Employee\Repositories;
 
-use App\Validators\ExcelSheetValidator;
 use Modules\Employee\Models\ExcelSheet;
-use Prettus\Repository\Criteria\RequestCriteria;
+use Modules\Employee\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use function app;
 
