@@ -11,12 +11,29 @@ class RequestCriteria extends BaseCriteria
     /**
      * @return void
      */
-    protected function hydrateSearchParams()
+    protected function hydrateQueryParams()
     {
-        $searchParamName = config('repository.criteria.params.search', 'search');
-        $searchArray = explode(';', $this->request->get($searchParamName));
-        $hydratedSearch = collect($searchArray)->filter()->implode(';');
-        $this->request->merge([$searchParamName => $hydratedSearch]);
+        collect([
+            config('repository.criteria.params.search', 'search'),
+            config('repository.criteria.params.searchFields', 'searchFields'),
+            config('repository.criteria.params.filter', 'filter'),
+            config('repository.criteria.params.orderBy', 'orderBy'),
+            config('repository.criteria.params.searchJoin', 'searchJoin'),
+        ])->each(fn($param) => $this->hydrateParam($param));
+
+        $sortedByParam = config('repository.criteria.params.sortedBy', 'sortedBy');
+        if (!in_array($this->request->get($sortedByParam), ['asc','desc'])) unset($this->request[$sortedByParam]);
+    }
+
+    /**
+     * @param $paramName
+     * @return void
+     */
+    protected function hydrateParam($paramName)
+    {
+        $values = explode(';', $this->request->get($paramName));
+        $hydratedValues = ($filtered = collect($values)->filter())->implode(';');
+        $filtered->isNotEmpty() and $this->request->merge([$paramName => $hydratedValues]);
     }
 
     /**
@@ -27,7 +44,7 @@ class RequestCriteria extends BaseCriteria
      */
     public function apply($model, RepositoryInterface $repository)
     {
-        $this->hydrateSearchParams();
+        $this->hydrateQueryParams();
         return parent::apply($model, $repository);
     }
 }
