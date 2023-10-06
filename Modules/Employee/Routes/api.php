@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Employee\Http\Controllers\EmployeeController;
 use Modules\Employee\Http\Controllers\ExcelSheetController;
+use Modules\Employee\Http\Controllers\DemoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +33,10 @@ Route::group([
 ], function (){
     Route::get('/{id}', ExcelSheetController::class)->name('show');
 });
+Route::group([
+    'prefix' => 'demo',
+    'as'=> 'demo.'
+], function (){
+    Route::post('truncateDB', [DemoController::class, 'truncateDB'])->name('truncateDB');
+});
+
