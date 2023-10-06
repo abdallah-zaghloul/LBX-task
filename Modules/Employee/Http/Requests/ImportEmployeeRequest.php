@@ -4,6 +4,7 @@ namespace Modules\Employee\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Modules\Employee\Traits\Response;
 
 class ImportEmployeeRequest extends FormRequest
@@ -21,6 +22,14 @@ class ImportEmployeeRequest extends FormRequest
     }
 
     /**
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        !empty($employeesFile = $this->file('employees')) and $this->merge(['extension' => $employeesFile->getClientOriginalExtension()]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -29,6 +38,7 @@ class ImportEmployeeRequest extends FormRequest
     {
         return [
             "employees" => ["required","file","mimes:csv",'mimetypes:text/csv',"max:10240"],
+            "extension" => ["required", Rule::in("csv")],
         ];
     }
 
