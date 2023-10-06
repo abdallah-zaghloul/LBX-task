@@ -1,66 +1,110 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+<h1>LBX Task Documentation</h1>
+
+<h2>Live Demo</h2>
+<strong>Please watch this video 👇</strong>
+
+[![Live Demo](https://img.youtube.com/vi/8rP9GRuBH-w/0.jpg)](https://youtu.be/8rP9GRuBH-w)
+<li> Please run "Truncate DB API" Firstly for a clean demo database
+<ul>To keep it simple for you the project is : 
+<li> Deployed at Heroku Free Serverless Host with Jaws Free 10 MB DB
+<br>
+  <a target="_blank" href="http://lbx-task-ac05b2f76b97.herokuapp.com/api/documentation#/Demo/truncateDB">Heroku Swagger Open API</a>
+<li> Dockerized using laravel sail to run it locally
+<br>
+  <a target="_blank" href="http://localhost:8000/api/documentation#/Demo/truncateDB">Local Swagger Open API</a>
+</ul>
+
+<h2>Project Infra Structure</h2>
+<ul>
+<li> The Project is a Decoupled Modular Monolithic App :
+    HMVC Modules (you can turn on/off each module and republish/reuse it at another project)
+<p>
+<a target="_blank" href="https://drive.google.com/uc?export=view&id=1DT3YIcfRSaU_SeiSzPht_vljOWu745Sr">
+<img src="https://drive.google.com/uc?export=view&id=1DT3YIcfRSaU_SeiSzPht_vljOWu745Sr" width="200" height="200">
+</a>
+
+<a target="_blank" href="https://drive.google.com/uc?export=view&id=18jSzl7SrJKevpDNko9kgWgvZLWJwXK_Y">
+<img src="https://drive.google.com/uc?export=view&id=18jSzl7SrJKevpDNko9kgWgvZLWJwXK_Y" width="200" height="200">
+</a>
 </p>
 
-## About Laravel
+<li> Module Structure (Repository Design Pattern)
+<p>
+<a target="_blank" href="https://drive.google.com/uc?export=view&id=1_CTRCCiZ0X4nG06_xTv48y6MH5vBb1gx">
+<img src="https://drive.google.com/uc?export=view&id=1_CTRCCiZ0X4nG06_xTv48y6MH5vBb1gx" width="400" height="200">
+</a>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<li> Separated/Attached Tests
+<p>
+<a target="_blank" href="https://drive.google.com/uc?export=view&id=1JzE_2ZtJXvIZjWXmb_tZUAmE3gsHgdD4">
+<img src="https://drive.google.com/uc?export=view&id=1JzE_2ZtJXvIZjWXmb_tZUAmE3gsHgdD4" width="200" height="200">
+</a>
+</p>
+</ul>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<h2>Import Solution Implementation</h2>
+<pre>
+Preparation :
+- validate excel-sheet file memType and Extension
+- upload it at S3 Bucket with status = "Processing"
+----------------
+Execution : 2 Background Job Queue Buses (groups)
+are chained in chunks (Read 1000 Record/ChunkedJob) :
+- Validator : validate records
+- Importer : Import records if the all the excel-sheet is Valid with ability 
+             to rollback in case of failure
+- Updates Url : show the updated status of file validation and importation
+  so front end can utilize it with ajax to update the UI continuously
+----------------
+* Recommendation :
+ we can utilize after import and validation event-listener not only to
+ update file status but also for send the user updates via email
+</pre>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+<h3>How To Run The Project Locally</h3>
+<pre>
+Requirements (all can be installed automatically using docker desktop):
+---------------
+- PHP 8.2
+- Run Docker Desktop
+- MYSQL
+- SQL lite PHP Extension
 
-## Learning Laravel
+<hr>
+Run the following at the project root dir Terminal
+---------------
+<ul>
+<li>Download Vendor folder
+composer install
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+<li>Make Sail alias
+alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+<li>Generate .env file from .env.decrypted:
+php artisan env:decrypt --key="base64:IMQS06IFVHHEqYuLNYQRQ1XYEyEXUr57kNXqkpBIPlo="
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+<li>Laravel Sail install
+php artisan sail:install
 
-## Laravel Sponsors
+<li>Make an alias for ./vendor/bin/sail:
+alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+<li>Make an alias for ./vendor/bin/sail:
+alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 
-### Premium Partners
+<li>Run Your local server up:
+sail up -d
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+<li>Run Your local server down:
+sail down
 
-## Contributing
+<li>To Run Unit/Feature Tests but configure your test with xdebug
+php artisan test --testsuite=Employee
+</ul>
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+if you have an issue you can see <a href="https://laravel.com/docs/10.x/sail">Laravel Sail</a>
+</pre>
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
